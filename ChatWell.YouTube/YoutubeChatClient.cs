@@ -14,7 +14,7 @@ namespace ChatWell.YouTube
 
         bool IsInitialized { get; }
 
-        int MinimumPollingDelayInMs;
+        int MinimumPollingDelayInMs { get; set; }
 
         Task ConnectAsync();
 
@@ -36,11 +36,11 @@ namespace ChatWell.YouTube
         private bool disconnect;
         private string liveChatId;
         private YouTubeService youtubeService;
-        public int MinimumPollingDelayInMs;
-
+        public int MinimumPollingDelayInMs { get; set; }
         public bool IsConnected { get; private set; }
 
         public bool IsInitialized { get; private set; }
+        
 
         public YouTubeChatClient(IYouTubeAuthService youtubeAuthService)
         {
