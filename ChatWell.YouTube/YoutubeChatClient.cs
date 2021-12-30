@@ -14,6 +14,8 @@ namespace ChatWell.YouTube
 
         bool IsInitialized { get; }
 
+        int MinimumPollingDelayInMs;
+
         Task ConnectAsync();
 
         void Disconnect();
@@ -34,6 +36,7 @@ namespace ChatWell.YouTube
         private bool disconnect;
         private string liveChatId;
         private YouTubeService youtubeService;
+        public int MinimumPollingDelayInMs;
 
         public bool IsConnected { get; private set; }
 
@@ -59,6 +62,7 @@ namespace ChatWell.YouTube
                     var nextPageToken = string.Empty;
                     var pollingIntervalMilliseconds = 0L;
                     var retryAttempts = 0;
+                    var delay = MinimumPollingDelayInMs;
 
                     while (!this.disconnect)
                     {
@@ -77,7 +81,11 @@ namespace ChatWell.YouTube
 
                                 retryAttempts = 0;
                                 isFirstRun = false;
-                                await Task.Delay((int)pollingIntervalMilliseconds).ConfigureAwait(false);
+                                
+                                if ((int)pollingIntervalMilliseconds > delay)
+                                    delay = (int)pollingIntervalMilliseconds;
+
+                                await Task.Delay(delay).ConfigureAwait(false);
                             }
                         }
                         catch (TaskCanceledException)
@@ -91,7 +99,7 @@ namespace ChatWell.YouTube
                             await Task.Delay(retryAttempts * 1000).ConfigureAwait(false);
                         }
 
-                        await Task.Delay((int)pollingIntervalMilliseconds).ConfigureAwait(false);
+                        await Task.Delay(delay).ConfigureAwait(false);
                     }
                 });
 
